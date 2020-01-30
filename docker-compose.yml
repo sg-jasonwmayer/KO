@@ -1,0 +1,26 @@
+version: "3.0"
+
+services:
+
+  simulator:
+    image: "cocacolafs-fos-docker-snapshots.jfrog.io/ncui:${PROJECT_VERSION}"
+    ports:
+      - 8080:8080
+    networks:
+      - simulator_network
+    volumes:
+      - simulator_data:/fos/data:rw
+
+
+networks:
+  simulator_network:
+
+volumes:
+  simulator_data:
+       driver_opts:
+             type: none
+             device: ${HOME}/coke/fos/data
+             o: bind
+
+
+

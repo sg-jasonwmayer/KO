@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <!-- Basics -->
+   <groupId>com.tccc.freestyle.application.default</groupId>
+   <artifactId>application-default-ncui</artifactId>
+   <packaging>pom</packaging>
+   <name>application-default-ncui</name>
+   <version>2.7.0.0-SNAPSHOT</version>
+   <description>
+      Non-consumer user interface for the dispenser.
+   </description>
+
+   <!-- Parent -->
+   <!--<parent>
+      <groupId>com.tccc.freestyle.application</groupId>
+      <artifactId>application-default</artifactId>
+<<<<<<< HEAD
+      <version>2.5.1.0-SNAPSHOT</version>
+   </parent> -->
+=======
+      <version>2.2.1-SNAPSHOT</version>
+   </parent>
+>>>>>>> 4611611d9cbafcc16fbf414a06212166f007457f
+
+   <!-- Properties -->
+   <properties>
+        <artifact.version>1.0.0</artifact.version>
+        <node.version>v10.14.2</node.version>
+        <npm.version>6.4.1</npm.version>
+        <fos.version>${project.version}</fos.version>
+        <distribution.version>${fos.version} (${buildNumber})</distribution.version>
+        <language.file>${basedir}/src/messages/languages.json</language.file>
+   </properties>
+
+     <!-- Profiles -->
+   <profiles>
+   <profile>
+        <id>default-tccc-repo</id>
+        <activation>
+              <property>
+                     <name>!env.tccc.repo.url</name>
+              </property>
+        </activation>
+        <properties>
+              <tccc.repo.url>https://cocacolafs.jfrog.io/cocacolafs</tccc.repo.url>
+        </properties>
+      </profile>
+      <profile>
+        <id>overriden-tccc-repo</id>
+        <activation>
+              <property>
+                     <name>env.tccc.repo.url</name>
+               </property>
+        </activation>
+        <properties>
+              <tccc.repo.url>${env.tccc.repo.url}</tccc.repo.url>
+        </properties>
+      </profile>
+   </profiles>
+
+   <build>
+      <plugins>
+         <!-- Retrieve build number -->
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+               <execution>
+                  <phase>validate</phase>
+                  <goals>
+                     <goal>create</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <doCheck>false</doCheck>
+               <doUpdate>false</doUpdate>
+            </configuration>
+         </plugin>
+
+         <!-- Make sure the expected properties are set -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+               <execution>
+                  <id>enforce-property</id>
+                  <goals>
+                     <goal>enforce</goal>
+                  </goals>
+                  <configuration>
+                     <rules>
+                        <requireProperty>
+                          <property>fos.version</property>
+                          <message>"FOS version must be specified"</message>
+                          <regex>.+</regex>
+                        </requireProperty>
+                        <requireProperty>
+                          <property>artifact.version</property>
+                          <message>"Artifact version property must be specified"</message>
+                          <regex>.+</regex>
+                        </requireProperty>
+                        <requireProperty>
+                          <property>distribution.version</property>
+                          <message>"Distribution version property must be specified"</message>
+                          <regex>.+</regex>
+                        </requireProperty>
+                     </rules>
+                     <fail>true</fail>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+
+               <!-- install node and npm -->
+               <execution>
+                  <id>install node and npm</id>
+                  <goals>
+                     <goal>install-node-and-npm</goal>
+                  </goals>
+                  <configuration>
+                     <nodeVersion>${node.version}</nodeVersion>
+                     <npmVersion>${npm.version}</npmVersion>
+                  </configuration>
+               </execution>
+
+               <!-- npm install -->
+               <execution>
+                  <id>npm install</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <configuration>
+                     <arguments>install</arguments>
+                  </configuration>
+               </execution>
+
+               <!-- npm install -->
+               <execution>
+                  <id>npm run build</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <configuration>
+                     <arguments>run build</arguments>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <!-- zip the contents of build -->
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+               <execution>
+                  <id>make-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+                  <configuration>
+                     <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                     </descriptors>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <!-- Copy utils-packager JAR to the target folder -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.0.2</version>
+            <executions>
+               <execution>
+                  <id>copy</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+              <artifactItems>
+                 <artifactItem>
+					<groupId>com.tccc.freestyle.utils</groupId>
+                    <artifactId>utils-packager</artifactId>
+                    <version>${fos.version}</version>
+                    <type>jar</type>
+                    <destFileName>utils-packager-${fos.version}.jar</destFileName>
+                 </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+           </configuration>
+        </plugin>
+
+         <!-- package the ncui -->
+         <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+               <execution>
+                  <id>package</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>run</goal>
+                  </goals>
+                  <configuration>
+                     <target>
+                        <exec executable="java">
+                           <arg value="-jar"/>
+                           <arg value="${project.build.directory}/lib/utils-packager-${fos.version}.jar"/>
+                           <arg value="-t"/>
+                           <arg value="NCUI"/>
+                           <arg value="-d"/>
+                           <arg value="${distribution.version}"/>
+                           <arg value="-v"/>
+                           <arg value="${artifact.version}"/>
+                           <arg value="-o"/>
+                           <arg value="${project.build.directory}/ncui.pkg"/>
+                           <arg value="${project.build.directory}/${project.build.finalName}-bin.zip"/>
+                        </exec>
+                     </target>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+               <execution>
+                  <id>attach-artifacts</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>attach-artifact</goal>
+                  </goals>
+                  <configuration>
+                     <artifacts>
+                        <artifact>
+                           <file>${project.build.directory}/ncui.pkg</file>
+                           <type>pkg</type>
+                        </artifact>
+                     </artifacts>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+   <!-- Artifact and plugin repositories -->
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>fos.releases</id>
+            <name>FOS Release Repository</name>
+            <url>${tccc.repo.url}/fos-releases</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>fos.snapshots</id>
+            <name>FOS Snapshot Repository</name>
+            <url>${tccc.repo.url}/fos-snapshots</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>fos.releases</id>
+            <name>FOS Release Repository</name>
+            <url>${tccc.repo.url}/fos-releases</url>
+            <layout>default</layout>
+        </pluginRepository>
+        <pluginRepository>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>fos.snapshots</id>
+            <name>FOS Snapshot Repository</name>
+            <url>${tccc.repo.url}/fos-snapshots</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>fos.releases</id>
+            <name>FOS Release Repository</name>
+            <url>${tccc.repo.url}/fos-releases</url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>fos.snapshots</id>
+            <name>FOS Snapshot Repository</name>
+            <url>${tccc.repo.url}/fos-snapshots</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
+    <scm>
+        <url>https://bitbucket.org/kofreestyle/fos_ncui.git</url>
+        <connection>scm:git:git://bitbucket.org/kofreestyle/fos_ncui.git</connection>
+    </scm>
+</project>
