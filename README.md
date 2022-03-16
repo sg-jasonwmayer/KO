@@ -13,3 +13,4 @@
   - Kill services with `killall java fos fsui fsos fos-panel`
   - Restart OS and UI with `fsos && fsui`
     - This step may take about 20 minutes..OR MORE GET WOKE
+ppp
