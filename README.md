@@ -11,5 +11,5 @@
   - Persist package with `touch /fos/pdata/system/properties/debug/persist`
   - Kill services with `killall java fos fsui fsos fos-panel`
   - Restart OS and UI with `fsos && fsui`
-    - This step may take about 20 minutes..OR MORE GET WOKE
+    - This step may take about 20 minutes..OR MORE GET WOKEy
 ppp
