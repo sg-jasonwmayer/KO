@@ -1,7 +1,7 @@
 # Run NCUI local dev
 - Run `npm install`...
 - Run `npm start` which will launch service on port 3000
-  - FOS should already be running
+  - FOS should already be running.
   - Proxy can be configured in `src/setupProxy.js`
 
 # Deploy NCUI to Device
