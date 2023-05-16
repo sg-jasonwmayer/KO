@@ -3,7 +3,6 @@
 - Run `npm start` which will launch service on port 3000
   - FOS should already be running.
   - Proxy can be configured in `src/setupProxy.js`
-
 # Deploy NCUI to Device
 - Run `npm run maven` to create ncui.pkg
 - SCP PKG to target `scp /target/ncui.pkg root@ip:/fos/content/release/`
