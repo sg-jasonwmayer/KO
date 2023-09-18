@@ -6,7 +6,7 @@
 # Deploy NCUI to Device
 - Run `npm run maven` to create ncui.pkg
 - SCP PKG to target `scp /target/ncui.pkg root@ip:/fos/content/release/`
-- SSH into server
+- SSH N 2 server
   - Persist package with `touch /fos/pdata/system/properties/debug/persist`
   - Kill services with `killall java fos fsui fsos fos-panel`
   
