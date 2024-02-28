@@ -1,4 +1,4 @@
-# Run NCUI - local dev
+# Run NCUI- local dev
 - Run `npm install`...
 - Run `npm start` which will launch service on port 3000
   - FOS should already be running.
