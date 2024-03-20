@@ -10,17 +10,11 @@ services:
       - simulator_network
     volumes:
       - simulator_data:/fos/data:rw
-
-
 networks:
   simulator_network:
-
 volumes:
   simulator_data:
        driver_opts:
              type: none
              device: ${HOME}/coke/fos/data
              o: bind
-
-
-
